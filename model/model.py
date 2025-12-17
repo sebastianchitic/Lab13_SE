@@ -4,7 +4,7 @@ from database.dao import DAO
 
 class Model:
     def __init__(self):
-        self.G = nx.Graph()
+        self.G = nx.DiGraph()
         self.nodes = None
         self.edges = None
 
@@ -29,14 +29,15 @@ class Model:
                 c2 = self.id_map[i.id_gene2]
 
                 if c1!=c2:
-                    n1, n2 = sorted((c1, c2))
-                    key = n1, n2
+                    key = c1, c2
                     if key not in pesi_archi:
-                        pesi_archi[key] = 0
+                        pesi_archi[key] = float(i.correlazione)
                     pesi_archi[key] += float(i.correlazione)
 
         for (c1,c2), weight in pesi_archi.items():
             self.G.add_edge(c1, c2, weight=weight)
+        print(len(pesi_archi.items()))
+        print(k)
 
     def get_min_max_weights(self):
         all_weights = list(nx.get_edge_attributes(self.G, 'weight').values())
