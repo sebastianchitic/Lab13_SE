@@ -40,4 +40,31 @@ class Controller:
 
     def handle_ricerca(self, e):
         """ Handler per gestire il problema ricorsivo di ricerca del cammino """""
-        # TODO
+        try:
+            soglia = float(self._view.txt_name.value)
+        except ValueError:
+            self._view.show_alert("Inserire un numero valido per la soglia.")
+            return
+        path, peso_totale = self._model.get_max_path(soglia)
+        self._view.lista_visualizzazione_3.controls.clear()
+        if not path:
+            self._view.lista_visualizzazione_3.controls.append(
+                ft.Text(f"Nessun camino trovato con archi > {soglia}")
+            )
+        else:
+            self._view.lista_visualizzazione_3.controls.append(
+                ft.Text(f"Cammino max trovato (Peso totale: {peso_totale:.2f}): Numero archi: {self._model.numero_nodi}"))
+
+
+            for i in range(len(path)-1):
+                u = path[i]
+                v = path[i+1]
+                peso = self._model.G[u][v]['weight']
+                self._view.lista_visualizzazione_3.controls.append(
+                    ft.Text(f"{u} --> {v} [peso: {peso:.2f}]")
+                )
+        self._view.page.update()
+
+
+
+

@@ -29,15 +29,13 @@ class Model:
                 c2 = self.id_map[i.id_gene2]
 
                 if c1!=c2:
-                    key = c1, c2
+                    key = c1,c2
                     if key not in pesi_archi:
                         pesi_archi[key] = float(i.correlazione)
                     pesi_archi[key] += float(i.correlazione)
 
         for (c1,c2), weight in pesi_archi.items():
             self.G.add_edge(c1, c2, weight=weight)
-        print(len(pesi_archi.items()))
-        print(k)
 
     def get_min_max_weights(self):
         all_weights = list(nx.get_edge_attributes(self.G, 'weight').values())
@@ -54,6 +52,36 @@ class Model:
             elif peso < soglia:
                 self.minimi += 1
         return self.massimi, self.minimi
+
+    def get_max_path(self, soglia):
+        self.best_path = []
+        self.max_weight = 0
+
+        for n in self.G.nodes:
+            self.ricorsione(n, [n], 0, soglia)
+
+        return self.best_path, self.max_weight
+
+    def ricorsione(self, n, parziale, peso_parziale, soglia):
+        if peso_parziale > self.max_weight:
+            self.max_weight = peso_parziale
+            self.best_path = list(parziale)
+
+        for vicino in self.G.neighbors(n):
+            peso_arco = self.G[n][vicino]['weight']
+            self.numero_nodi = self.G.number_of_edges(vicino)
+
+            if peso_arco > soglia and vicino not in parziale:
+                parziale.append(vicino)
+                self.ricorsione(vicino,parziale, peso_arco + peso_parziale, soglia)
+
+                parziale.pop()
+
+
+
+
+
+
 
 
 
